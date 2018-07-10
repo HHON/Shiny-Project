@@ -1,0 +1,55 @@
+---
+title: "Project Presentation"
+author: "Hannah Hon"
+date: "7/10/2018"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Background
+
+- This app is to graph the different EU stock Indices using histogram.
+- The data used for this app is EuStockMarkets.
+- EuStockMarkets contains the daily closing prices of major European stock indices: Germany DAX (Ibis), Switzerland SMI, France CAC, and UK FTSE. 
+
+## Functionality
+- The first sidebar contains the name of four EU index DAX, SMI, CAC, FTSE.
+- The second sidebar controls the number of bins the histogram has.
+- The first sidebar is a submit button.
+- The mainpanel shows the histogram for each stock index
+
+## ui.R
+```{r, echo = TRUE}
+library(shiny)
+ui <- fluidPage(
+  titlePanel("EuStockMarkets"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Plot for EuStockMarkets"),
+      selectInput('index', 'EuStock Index', choices = c("DAX" = 1,"SMI" = 2,"CAC" = 3,"FTSE" = 4), selected = "DAX"),
+      sliderInput('bins','Number of bins', min = 10, max = 100, value = 500),
+      submitButton("Submit")
+),
+    mainPanel(plotOutput("plot"))
+  )
+  )
+```
+## Server.R
+
+```{r, echo = TRUE}
+server <- function(input, output) {
+
+  output$plot <- renderPlot({
+   data(EuStockMarkets)
+   stocks <- as.data.frame(EuStockMarkets)
+   c <- as.numeric(input$index)
+   hist(stocks[,c], breaks = seq(1000, max(stocks[,c]), l = input$bins +1))
+  })
+}
+```
+
+
